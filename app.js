@@ -7,7 +7,7 @@ const Koa = require('koa')
 
 const app = new Koa;
 const index = require('./routes/index');
-const users = require('./routes/users');
+const user = require('./routes/user');
 
 // error handler
 onerror(app);
@@ -29,10 +29,10 @@ app.use(logger());
 //   console.log('%s %s - %s', this.method, this.url, ms);
 // });
 
-// app.use(koaStatic(__dirname + '/public'));
+app.use(koaStatic(__dirname + '/public'));
 
 app.use(index.routes()).use(index.allowedMethods());
-app.use(users.routes()).use(users.allowedMethods());
+app.use(user.routes()).use(user.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {

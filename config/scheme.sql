@@ -1,7 +1,7 @@
 CREATE DATABASE qemu;
 
 CREATE USER 'qemu'@'localhost' IDENTIFIED BY 'qemu';
-GRANT ALL PRIVILEGES on qemu.* to 'qemu'@'localhost' IDENTIFIED BY 'qemu';
+GRANT ALL PRIVILEGES on qemu.* to 'qemu'@'localhost';
 
 CREATE TABLE sessions(
 	id varchar(64) NOT NULL PRIMARY KEY,
