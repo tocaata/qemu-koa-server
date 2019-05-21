@@ -31,6 +31,11 @@ app.use(logger());
 
 app.use(koaStatic(__dirname + '/public'));
 
+// get user session.
+app.use(async (ctx, next) => {
+  await next();
+});
+
 app.use(index.routes()).use(index.allowedMethods());
 app.use(user.routes()).use(user.allowedMethods());
 

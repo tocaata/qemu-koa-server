@@ -5,7 +5,8 @@ GRANT ALL PRIVILEGES on qemu.* to 'qemu'@'localhost';
 
 CREATE TABLE sessions(
 	id varchar(64) NOT NULL PRIMARY KEY,
-	data varchar(512)
+	data varchar(512),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE users(
@@ -14,7 +15,7 @@ CREATE TABLE users(
 	name varchar(64) NOT NULL,
 	email varchar(64),
 	password_hash varchar(64),
-	created_at timestamp,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp,
 	detail varchar(256)
 );
@@ -31,7 +32,7 @@ CREATE TABLE vms(
 	name varchar(64) NOT NULL,
 	created_at timestamp,
 	deleted_at timestamp,
-	updated_at timestamp,
+	updated_at timestamp ON UPDATE CURRENT_TIMESTAMP,
 	last_boot_at timestamp,
 	auto_boot TINYINT(1),
 	is_template TINYINT(1),
