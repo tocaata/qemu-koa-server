@@ -7,7 +7,8 @@ const Koa = require('koa')
 
 const app = new Koa;
 const index = require('./routes/index');
-const user = require('./routes/user');
+const router = require('./routes/router');
+const sessionController = require('./controllers/SessionController');
 
 // error handler
 onerror(app);
@@ -22,26 +23,33 @@ app.use(require('koa-bodyparser')());
 app.use(json());
 app.use(logger());
 
-// app.use(async (ctx, next) => {
-//   const start = new Date;
-//   await next;
-//   const ms = new Date - start;
-//   console.log('%s %s - %s', this.method, this.url, ms);
-// });
+app.use(async (ctx, next) => {
+  const start = new Date;
+  await next();
+  const ms = new Date - start;
+  console.log('%s %s - %s', ctx.method, ctx.originalUrl, ms);
+});
+
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch(e) {
+    ctx.response.body = { status: "FAIL", code: 40000, message: e.message };
+  }
+});
 
 app.use(koaStatic(__dirname + '/public'));
 
-// get user session.
-app.use(async (ctx, next) => {
-  await next();
-});
+// Get user session.
+app.use(sessionController);
+
 
 app.use(index.routes()).use(index.allowedMethods());
-app.use(user.routes()).use(user.allowedMethods());
+app.use(router.routes()).use(router.allowedMethods());
 
 // error-handling
-app.on('error', (err, ctx) => {
-  console.error('server error', err, ctx)
-});
+// app.on('error', (err, ctx) => {
+//   console.error('server error', err, ctx);
+// });
 
 module.exports = app;

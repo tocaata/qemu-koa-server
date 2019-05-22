@@ -4,7 +4,7 @@ CREATE USER 'qemu'@'localhost' IDENTIFIED BY 'qemu';
 GRANT ALL PRIVILEGES on qemu.* to 'qemu'@'localhost';
 
 CREATE TABLE sessions(
-	id varchar(64) NOT NULL PRIMARY KEY,
+	session_id varchar(64) NOT NULL PRIMARY KEY,
 	data varchar(512),
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
