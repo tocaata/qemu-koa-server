@@ -16,31 +16,40 @@ module.exports = {
     ctx.response.body = 'this is a users/bar response!';
   },
 
+  detail: async (ctx) => {
+    const userId = ctx.params.id;
+    const user = ctx.session.user;
+
+    if (isNaN(userId) || user.get('id') !== parseInt(userId)) {
+      ctx.throw("You don't have the permission to get this user info.");
+    } else {
+      const res = user.toJSON();
+      delete res['password_hash'];
+      res.roles = ['admin'];
+      ctx.body = response.success(res, "Get user info successfully.");
+    }
+  },
+
   login: async (ctx) => {
     const data = ctx['request']['body'];
 
-    try {
-      const { username, password } = data;
-      if (ctx.session && ctx.session.user && username === ctx.session.user.get('username')) {
-        ctx.response.body = { status: 'FAIL', code: 20000, message: 'you have login this site.'};
-        return;
-      }
+    const { username, password } = data;
+    const password_hash = crypto.createHash('sha256').update(password).digest('base64');
 
-      const password_hash = crypto.createHash('sha256').update(password).digest('base64');
-
-      const user = await User.where({ username }).fetch()
-        , sessionId = uuidv4();
-      if (user && user.get('password_hash') === password_hash) {
-        await new Session({ session_id: sessionId, data: JSON.stringify({ user_id: user.id}) }).save();
-        ctx.cookies.set('authorization', sessionId, { expires:  moment().add(1, 'hours').toDate()});
-        ctx.response.body = { status: 'SUCCESS', code: 20000, message: `welcome to qemu-koa-server!` };
-      } else {
-        ctx.throw("No user.");
-      }
-    } catch (e) {
-      console.error(e);
-      ctx.response.body = { status: 'FAIL', code: 40000, message: e.message };
+    const user = await User.where({ username }).fetch()
+      , sessionId = uuidv4();
+    if (user && user.get('password_hash') === password_hash) {
+      await new Session({ session_id: sessionId, data: JSON.stringify({ user_id: user.id}) }).save();
+      // ctx.cookies.set('Admin-Token', sessionId, { expires:  moment().add(1, 'hours').toDate()});
+      ctx.body = response.success({ userId: user.get('id'), token: sessionId, roles: ['admin'] }, `welcome to qemu-koa-server!`);
+    } else {
+      ctx.throw("Please input correct user name and password.");
     }
+  },
+
+  logout: async (ctx) => {
+    ctx.cookies.set('Admin-Token');
+    ctx.body = response.success(undefined, 'You have logout.');
   },
 
   build: async (ctx) => {
@@ -67,7 +76,6 @@ module.exports = {
       const password_hash = crypto.createHash('sha256').update(password).digest('base64');
 
       const user = await User.forge({username, name, password_hash, detail}).save();
-      // console.log(user);
       ctx.response.body = response.success(undefined, `Create user ${name} successfully.`);
   }
 };

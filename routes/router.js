@@ -3,6 +3,7 @@ const router = new Router();
 
 const local = {};
 local.userController = require('../controllers/UserController');
+local.vmController = require('../controllers/vmController');
 
 router.all('/:controller/:action', async (ctx, next) => {
   let { controller, action } = ctx.params;
@@ -11,9 +12,21 @@ router.all('/:controller/:action', async (ctx, next) => {
       action = 'build';
       break;
   }
-  // ctx.response.body = '{"ABC":"FOUND"}';
+  if (controller + 'Controller' in local && action in local[controller + 'Controller']) {
+    await local[controller + 'Controller'][action](ctx);
+  } else {
+    ctx.throw(400, 'Not Found', { code: 400, status: 'FAIL' });
+  }
+});
 
-  await local[controller + 'Controller'][action](ctx);
+
+router.all('/:controller/:action/:id', async (ctx, next) => {
+  let { controller, action } = ctx.params;
+  if (controller + 'Controller' in local && action in local[controller + 'Controller']) {
+    await local[controller + 'Controller'][action](ctx);
+  } else {
+    ctx.throw(400, 'Not Found', { code: 400, status: 'FAIL' });
+  }
 });
 
 module.exports = router;

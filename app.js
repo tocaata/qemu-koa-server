@@ -9,6 +9,7 @@ const app = new Koa;
 const index = require('./routes/index');
 const router = require('./routes/router');
 const sessionController = require('./controllers/SessionController');
+const HttpError = require('http-errors');
 
 // error handler
 onerror(app);
@@ -34,6 +35,13 @@ app.use(async (ctx, next) => {
   try {
     await next();
   } catch(e) {
+    if (e.name === 'BadRequestError') {
+      ctx.body = { status: 'FAIL', code: 400, message: e.message };
+      ctx.status = 400;
+      ctx.message = e.message;
+      return ;
+      // ctx.throw(e.code, e.message);
+    }
     ctx.response.body = { status: "FAIL", code: 40000, message: e.message };
   }
 });

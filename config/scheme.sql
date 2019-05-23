@@ -30,7 +30,7 @@ CREATE TABLE oss(
 CREATE TABLE vms(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(64) NOT NULL,
-	created_at timestamp,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp,
 	updated_at timestamp ON UPDATE CURRENT_TIMESTAMP,
 	last_boot_at timestamp,
@@ -54,7 +54,7 @@ CREATE TABLE discs(
 	name varchar(64),
 	path varchar(128),
 	size int,
-	created_at timestamp,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	os varchar(32)
 );
 
