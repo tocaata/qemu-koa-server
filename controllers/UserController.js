@@ -8,8 +8,21 @@ const response = require('../lib/response');
 
 module.exports = {
   list: async (ctx) => {
-    const users = await User.fetchAll();
-    ctx.response.body = response.success(users.toJSON(), "Get user list successfully!");
+    const { pageIndex, pageSize } = ctx.request.body;
+
+    const users = await User.query({}).orderBy('-created_at').fetchPage({ pageSize, page: pageIndex });
+    const usersJson = users.toJSON();
+
+    ctx.response.body = response.success({ list: usersJson, totalSize: users.pagination.rowCount}, "Get user list successfully!");
+  },
+
+  delete: async (ctx) => {
+    const { userId } = ctx.request.body;
+    const userDeletable = await User.where({ id: userId }).destroy();
+
+    console.log(userDeletable);
+
+    ctx.body = response.success(undefined, "Delete user successfully.");
   },
 
   bar: async (ctx) => {
@@ -17,17 +30,13 @@ module.exports = {
   },
 
   detail: async (ctx) => {
-    const userId = ctx.params.id;
+    // const token = ctx['request']['body']['token'];
     const user = ctx.session.user;
 
-    if (isNaN(userId) || user.get('id') !== parseInt(userId)) {
-      ctx.throw("You don't have the permission to get this user info.");
-    } else {
-      const res = user.toJSON();
-      delete res['password_hash'];
-      res.roles = ['admin'];
-      ctx.body = response.success(res, "Get user info successfully.");
-    }
+    const res = user.toJSON();
+    delete res['password_hash'];
+    res.roles = ['admin'];
+    ctx.body = response.success(res, "Get user info successfully.");
   },
 
   login: async (ctx) => {
@@ -66,7 +75,7 @@ module.exports = {
         ctx.throw("Need user password.");
       }
 
-      const { username, name, password, detail } = data;
+      const { username, name, password, detail, email } = data;
 
       if (await User.where({username}).fetch()) {
         ctx.throw(`Username ${username} exists!`);
@@ -75,7 +84,7 @@ module.exports = {
 
       const password_hash = crypto.createHash('sha256').update(password).digest('base64');
 
-      const user = await User.forge({username, name, password_hash, detail}).save();
+      const user = await User.forge({username, name, password_hash, detail, email}).save();
       ctx.response.body = response.success(undefined, `Create user ${name} successfully.`);
   }
 };
