@@ -66,3 +66,8 @@ CREATE TABLE disks(
 	size int,
 	used_size int
 );
+
+CREATE TABLE vm_config_templates(
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    config text
+);
