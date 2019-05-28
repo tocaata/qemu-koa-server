@@ -71,5 +71,6 @@ CREATE TABLE vm_option_templates(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name varchar(64),
     arg varchar(16),
+    is_primary TINYINT(1),
     config text
 );

@@ -14,7 +14,7 @@ module.exports = {
   newOption: async (ctx) => {
     const object = ctx.request.body;
 
-    const option = await new VmOptionTemplate({ name: object.title, arg: object.arg, config: JSON.stringify(object) }).save();
+    const option = await new VmOptionTemplate({ name: object.title, arg: object.arg, is_primary: object.isPrimary, config: JSON.stringify(object) }).save();
     if (option.id > 0) {
       ctx.body = response.success({}, "Create new KVM option successfully!");
     } else {
@@ -29,5 +29,9 @@ module.exports = {
     const optionsJson = options ? options.toJSON() : undefined;
 
     ctx.body = response.success({ list: optionsJson, totalSize: options.pagination.rowCount }, "Get option list successfully!");
+  },
+  primaryOption: async (ctx) => {
+    const options = await VmOptionTemplate.query({ is_primary: true }).fetchAll();
+    ctx.body = response.success(options.toJSON(), "Get all primary options");
   }
 };
