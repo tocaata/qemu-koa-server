@@ -41,8 +41,11 @@ app.use(async (ctx, next) => {
       ctx.message = e.message;
       return ;
       // ctx.throw(e.code, e.message);
+    } else {
+      ctx.body = { status: "FAIL", code: 40000, message: e.message };
+      // ctx.status = e.status;
+      ctx.message = e.message;
     }
-    ctx.response.body = { status: "FAIL", code: 40000, message: e.message };
   }
 });
 

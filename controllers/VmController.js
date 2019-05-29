@@ -16,11 +16,11 @@ module.exports = {
     const { name, arguments: args } = ctx.request.body;
 
     const vm = await bookshelf.transaction(async (t) => {
-      await new Vm({ name, status: 0, auto_boot: false })
+      return await new Vm({ name, status: 0, auto_boot: false })
         .save(null, {transacting: t})
         .tap(async (m) => {
-          return await Promise.all(args.map((config => {
-            return new VmConfig({ name: config[0], value: config[1], editable: true}).save({ vm_id: m.id }, {transacting: t});
+          return await Promise.all(args.map(( async config => {
+            return await new VmConfig({ name: config[0], value: config[1], editable: true}).save({ vm_id: m.id }, {transacting: t});
           })));
         });
     });

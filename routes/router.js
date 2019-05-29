@@ -5,6 +5,8 @@ const local = {};
 local.userController = require('../controllers/UserController');
 local.vmController = require('../controllers/vmController');
 
+router.all('/vm/create', local.vmController.create);
+
 router.all('/:controller/:action', async (ctx, next) => {
   let { controller, action } = ctx.params;
   switch (action) {

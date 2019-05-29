@@ -1,16 +1,20 @@
-const SessionController = require('../models/session');
+const Session = require('../models/session');
 const User = require('../models/user');
 
 const sessionController = async (ctx, next) => {
-  try {
-    const sessionId = ctx.cookies.get('Admin-Token');
-    const session = await SessionController.where({session_id: sessionId}).fetch();
-    ctx.session = JSON.parse(session.get('data'));
-    ctx.session.user = await User.where({id: ctx.session.user_id}).fetch();
-  } catch (e) {
+  if (['/user/login', '/user/logout', '/vm/test'].includes(ctx.path)) {
+    await next();
+  } else {
+    const sessionId = ctx.cookies.get('Admin-Token') || ctx.req.headers['x-token'];
+    ctx.assert(sessionId, 401, 'Unauthorized!');
 
+    const session = await Session.where({session_id: sessionId}).fetch();
+    ctx.state = JSON.parse(session.get('data'));
+    ctx.state.user = await User.where({id: ctx.state.user_id}).fetch();
+
+    await next();
+    ctx.assert(ctx.state.user, 401, "User not found. Please login!");
   }
-  await next();
 };
 
 module.exports = sessionController;

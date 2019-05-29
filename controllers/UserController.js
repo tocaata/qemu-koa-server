@@ -27,7 +27,7 @@ module.exports = {
 
   detail: async (ctx) => {
     // const token = ctx['request']['body']['token'];
-    const user = ctx.session.user;
+    const user = ctx.state.user;
 
     const res = user.toJSON();
     delete res['password_hash'];
@@ -43,13 +43,12 @@ module.exports = {
 
     const user = await User.where({ username }).fetch()
       , sessionId = uuidv4();
-    if (user && user.get('password_hash') === password_hash) {
-      await new Session({ session_id: sessionId, data: JSON.stringify({ user_id: user.id}) }).save();
-      // ctx.cookies.set('Admin-Token', sessionId, { expires:  moment().add(1, 'hours').toDate()});
-      ctx.body = response.success({ userId: user.get('id'), token: sessionId, roles: ['admin'] }, `welcome to qemu-koa-server!`);
-    } else {
-      ctx.throw("Please input correct user name and password.");
-    }
+
+    ctx.assert(user && user.get('password_hash') === password_hash,
+      403, "Please input correct user name and password.");
+    await new Session({ session_id: sessionId, data: JSON.stringify({ user_id: user.id}) }).save();
+    // ctx.cookies.set('Admin-Token', sessionId, { expires:  moment().add(1, 'hours').toDate()});
+    ctx.body = response.success({ userId: user.get('id'), token: sessionId, roles: ['admin'] }, `welcome to qemu-koa-server!`);
   },
 
   logout: async (ctx) => {
