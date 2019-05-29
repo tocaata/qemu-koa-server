@@ -25,10 +25,6 @@ module.exports = {
     ctx.body = response.success(undefined, "Delete user successfully.");
   },
 
-  bar: async (ctx) => {
-    ctx.response.body = 'this is a users/bar response!';
-  },
-
   detail: async (ctx) => {
     // const token = ctx['request']['body']['token'];
     const user = ctx.session.user;

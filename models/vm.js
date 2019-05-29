@@ -1,7 +1,17 @@
 const bookshelf = require('../lib/bookshelf');
 
 const Vm = bookshelf.Model.extend({
-  tableName: 'vms'
+  tableName: 'vms',
+  configs() {
+    return this.hasMany(VmConfig);
+  }
 });
 
-module.exports = Vm;
+const VmConfig = bookshelf.Model.extend({
+  tableName: 'vm_configs',
+  vm() {
+    return this.belongsTo(Vm);
+  }
+});
+
+module.exports = { Vm, VmConfig };

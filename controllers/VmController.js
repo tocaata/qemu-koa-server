@@ -1,6 +1,7 @@
-const Vm = require('../models/vm');
+const { Vm, VmConfig } = require('../models/vm');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
+const bookshelf = require('../lib/bookshelf');
 
 module.exports = {
   list: async (ctx) => {
@@ -9,6 +10,23 @@ module.exports = {
     const vmsJson = vms ? vms.toJSON() : undefined;
 
     ctx.body = response.success({ list: vmsJson, totalSize: vms.pagination.rowCount}, "Get vm list successfully!");
+  },
+
+  create: async (ctx) => {
+    const { name, arguments: args } = ctx.request.body;
+
+    const vm = await bookshelf.transaction(async (t) => {
+      await new Vm({ name, status: 0, auto_boot: false })
+        .save(null, {transacting: t})
+        .tap(async (m) => {
+          return await Promise.all(args.map((config => {
+            return new VmConfig({ name: config[0], value: config[1], editable: true}).save({ vm_id: m.id }, {transacting: t});
+          })));
+        });
+    });
+    console.log(vm.related('configs'));
+
+    ctx.body = response.success(undefined, "Create machine successfully!")
   },
 
   newOption: async (ctx) => {
@@ -37,8 +55,15 @@ module.exports = {
     ctx.body = response.success({ list: optionsJson, totalSize: options.pagination.rowCount }, "Get option list successfully!");
   },
 
-  primaryOption: async (ctx) => {
-    const allOptions = await VmOptionTemplate.query({ is_primary: true }).fetchAll();
+  primaryOptions: async (ctx) => {
+    const allOptions = await VmOptionTemplate.where({ is_primary: true }).fetchAll();
     ctx.body = response.success(allOptions.toJSON(), "Get all primary options");
+  },
+
+  deleteArg: async (ctx) => {
+    const { id } = ctx.request.body;
+    await VmOptionTemplate.where({ id }).destroy();
+
+    ctx.body = response.success(undefined, "Delete vm arg successfully!")
   }
 };

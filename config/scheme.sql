@@ -37,7 +37,7 @@ CREATE TABLE vms(
 	auto_boot TINYINT(1),
 	is_template TINYINT(1),
 	os_id integer REFERENCES oss(id),
-	status TINYINT(3),
+	status TINYINT(3), -- 0: stopped, 1: running, 2: pending, 3: down
 	owner_id int REFERENCES users(id)
 );
 
