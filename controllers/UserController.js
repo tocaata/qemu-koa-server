@@ -52,6 +52,8 @@ module.exports = {
   },
 
   logout: async (ctx) => {
+    const sessionId = ctx.cookies.get('Admin-Token') || ctx.req.headers['x-token'];
+    await Session.where({ session_id: sessionId}).destroy();
     ctx.cookies.set('Admin-Token');
     ctx.body = response.success(undefined, 'You have logout.');
   },

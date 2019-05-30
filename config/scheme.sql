@@ -44,8 +44,9 @@ CREATE TABLE vms(
 CREATE TABLE vm_configs(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	vm_id int NOT NULL REFERENCES vms(id),
-	name varchar(32) NOT NULL,
+	name varchar(32),
 	value varchar(256),
+	vm_option_template_id int REFERENCES vm_option_templates(id),
 	editable TINYINT(1)
 );
 

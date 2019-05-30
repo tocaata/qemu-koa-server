@@ -19,14 +19,24 @@ module.exports = {
       return await new Vm({ name, status: 0, auto_boot: false })
         .save(null, {transacting: t})
         .tap(async (m) => {
-          return await Promise.all(args.map(( async config => {
-            return await new VmConfig({ name: config[0], value: config[1], editable: true}).save({ vm_id: m.id }, {transacting: t});
+          return await Promise.all(Object.entries(args).map(( async ([id, config]) => {
+            return await new VmConfig({ vm_option_template_id: parseInt(id), value: JSON.stringify(config), editable: true}).save({ vm_id: m.id }, {transacting: t});
           })));
         });
     });
-    console.log(vm.related('configs'));
+    // console.log(vm.related('configs'));
 
-    ctx.body = response.success(undefined, "Create machine successfully!")
+    ctx.body = response.success(undefined, "Create machine successfully!");
+  },
+
+  delete: async (ctx) => {
+    const { id } = ctx.request.body;
+    const result = await bookshelf.transaction(async (t) => {
+      await VmConfig.where({ vm_id: id }).destroy({transacting: t});
+      await Vm.where({ id }).destroy({transacting: t});
+    });
+
+    ctx.body = response.success(undefined, "Delete machine successfully!");
   },
 
   newOption: async (ctx) => {
