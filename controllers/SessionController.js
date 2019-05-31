@@ -2,7 +2,7 @@ const Session = require('../models/session');
 const User = require('../models/user');
 
 const sessionController = async (ctx, next) => {
-  if (['/user/login', '/user/logout', '/vm/test'].includes(ctx.path)) {
+  if (['/user/login', '/user/logout', '/user/new'].includes(ctx.path)) {
     await next();
   } else {
     const sessionId = ctx.cookies.get('Admin-Token') || ctx.req.headers['x-token'];
