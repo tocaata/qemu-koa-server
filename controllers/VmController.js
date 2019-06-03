@@ -20,7 +20,8 @@ module.exports = {
         .save(null, {transacting: t})
         .tap(async (m) => {
           return await Promise.all(Object.entries(args).map(( async ([id, config]) => {
-            return await new VmConfig({ vm_option_template_id: parseInt(id), value: JSON.stringify(config), editable: true}).save({ vm_id: m.id }, {transacting: t});
+            return await new VmConfig({ vm_option_template_id: parseInt(id), value: JSON.stringify(config), editable: true})
+              .save({ vm_id: m.id }, {transacting: t});
           })));
         });
     });
