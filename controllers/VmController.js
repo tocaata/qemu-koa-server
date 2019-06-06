@@ -43,12 +43,6 @@ module.exports = {
   newOption: async (ctx) => {
     const object = ctx.request.body;
 
-    if (object.isPrimary) {
-      if (await VmOptionTemplate.where({ arg: object.arg, is_primary: true }).fetch()) {
-        ctx.throw("Conflict! a same primary kvm arg exists. Please set primary to false!");
-      }
-    }
-
     const option = await new VmOptionTemplate({ name: object.title, arg: object.arg, is_primary: object.isPrimary, config: JSON.stringify(object) }).save();
     if (option.id > 0) {
       ctx.body = response.success({}, "Create new KVM option successfully!");
