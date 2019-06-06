@@ -3,7 +3,7 @@ const router = new Router();
 
 const local = {};
 local.userController = require('../controllers/UserController');
-local.vmController = require('../controllers/vmController');
+local.vmController = require('../controllers/VmController');
 
 router.all('/:controller/:action', async (ctx, next) => {
   let { controller, action } = ctx.params;

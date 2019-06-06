@@ -44,7 +44,6 @@ app.use(async (ctx, next) => {
     } else {
       ctx.body = { status: "FAIL", code: 40000, message: e.message };
       // ctx.status = e.status;
-      ctx.message = e.message;
     }
   }
 });

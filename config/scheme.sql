@@ -16,7 +16,7 @@ CREATE TABLE users(
 	email varchar(64),
 	password_hash varchar(64),
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-	deleted_at timestamp,
+	deleted_at timestamp NULL DEFAULT NULL,
 	detail varchar(256)
 );
 
@@ -31,9 +31,9 @@ CREATE TABLE vms(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(64) NOT NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-	deleted_at timestamp,
+	deleted_at timestamp NULL DEFAULT NULL,
 	updated_at timestamp ON UPDATE CURRENT_TIMESTAMP,
-	last_boot_at timestamp,
+	last_boot_at timestamp NULL DEFAULT NULL,
 	auto_boot TINYINT(1),
 	is_template TINYINT(1),
 	os_id integer REFERENCES oss(id),
