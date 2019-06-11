@@ -70,5 +70,9 @@ module.exports = {
     await VmOptionTemplate.where({ id }).destroy();
 
     ctx.body = response.success(undefined, "Delete vm arg successfully!")
+  },
+
+  getCmd: async (ctx) => {
+    const { id } = ctx.request.body;
   }
 };
