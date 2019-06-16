@@ -33,16 +33,8 @@ module.exports = {
 
   delete: async (ctx) => {
     const { id } = ctx.request.body;
-    const vm = await Vm.where({ id }).fetch();
-    const result = await bookshelf.transaction(async (t) => {
-      // await VmConfig.where({ vm_id: id }).destroy({transacting: t});
-      const configs = await vm.configs().fetch();
-      for (let c of configs) {
-        await c.destroy({ transacting: t });
-      }
-      await vm.destroy({transacting: t});
-      // await Vm.where({ id }).destroy({transacting: t});
-    });
+    const machine = await Vm.where({ id }).fetch();
+    const result = await runingMachines.delete(machine);
 
     ctx.body = response.success(undefined, "Delete machine successfully!");
   },
@@ -74,7 +66,8 @@ module.exports = {
 
   deleteArg: async (ctx) => {
     const { id } = ctx.request.body;
-    await VmOptionTemplate.where({ id }).destroy();
+    const template = await VmOptionTemplate.where({ id }).fetch();
+    const ret = await template.delete();
 
     ctx.body = response.success(undefined, "Delete vm arg successfully!")
   },
