@@ -2,6 +2,7 @@ const { Vm, VmConfig } = require('../models/vm');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
 const bookshelf = require('../lib/bookshelf');
+const runingMachines = require('../lib/runingMachines');
 
 module.exports = {
   list: async (ctx) => {
@@ -32,9 +33,15 @@ module.exports = {
 
   delete: async (ctx) => {
     const { id } = ctx.request.body;
+    const vm = await Vm.where({ id }).fetch();
     const result = await bookshelf.transaction(async (t) => {
-      await VmConfig.where({ vm_id: id }).destroy({transacting: t});
-      await Vm.where({ id }).destroy({transacting: t});
+      // await VmConfig.where({ vm_id: id }).destroy({transacting: t});
+      const configs = await vm.configs().fetch();
+      for (let c of configs) {
+        await c.destroy({ transacting: t });
+      }
+      await vm.destroy({transacting: t});
+      // await Vm.where({ id }).destroy({transacting: t});
     });
 
     ctx.body = response.success(undefined, "Delete machine successfully!");
@@ -74,5 +81,16 @@ module.exports = {
 
   getCmd: async (ctx) => {
     const { id } = ctx.request.body;
+    const machine = await Vm.where({ id }).fetch();
+    const result = await runingMachines.exec('getCmd', machine);
+    ctx.body = response.success(result, "Get Machine Command Arguments Successfully.")
+  },
+
+  run: async (ctx) => {
+    const { id } = ctx.request.body;
+    const machine = await Vm.where({ id }).fetch();
+    const result = await runingMachines.start(machine);
+
+    ctx.body = response.success(result, "Machine Start Up.")
   }
 };

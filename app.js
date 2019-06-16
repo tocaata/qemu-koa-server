@@ -42,6 +42,7 @@ app.use(async (ctx, next) => {
       return ;
       // ctx.throw(e.code, e.message);
     } else {
+      console.error(e);
       ctx.body = { status: "FAIL", code: 40000, message: e.message };
       // ctx.status = e.status;
     }
