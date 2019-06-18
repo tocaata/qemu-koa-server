@@ -1,7 +1,8 @@
-const { Vm, VmConfig } = require('../models/vm');
+const bookshelf = require('../lib/bookshelf');
+const Vm = require('../models/vm');
+const VmConfig = require('../models/vmConfig');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
-const bookshelf = require('../lib/bookshelf');
 const runingMachines = require('../lib/runingMachines');
 
 module.exports = {

@@ -1,10 +1,10 @@
 const bookshelf = require('../lib/bookshelf');
-const vmOptionTemplate = require('./vmOptionTemplate');
+require('./vmConfig');
 
-const Vm = bookshelf.Model.extend({
+module.exports = bookshelf.model('Vm', {
   tableName: 'vms',
   configs() {
-    return this.hasMany(VmConfig);
+    return this.hasMany('VmConfig');
   },
 
   async getCmd() {
@@ -56,16 +56,3 @@ const Vm = bookshelf.Model.extend({
     });
   }
 });
-
-const VmConfig = bookshelf.Model.extend({
-  tableName: 'vm_configs',
-  vm() {
-    return this.belongsTo(Vm);
-  },
-
-  vmOptionTemplate() {
-    return this.belongsTo(vmOptionTemplate);
-  }
-});
-
-module.exports = { Vm, VmConfig };

@@ -1,18 +1,18 @@
 const bookshelf = require('../lib/bookshelf');
-const { VmConfig } = require('../models/vm');
+require('./vmConfig');
 
-const VmOptionTemplate = bookshelf.Model.extend({
+const VmOptionTemplate = bookshelf.model('VmOptionTemplate', {
   tableName: 'vm_option_templates',
 
   vmConfigs() {
-    return this.hasMany(VmConfig);
+    return this.hasMany('VmConfig');
   },
 
 
   async delete() {
-    const count = this.vmConfigs().count();
+    const count = await this.vmConfigs().count();
     if (count > 0) {
-      throw new Error("The option template has been used by virtual machine.");
+      throw new Error("Cannot delete this kvm arg which is used by machine.");
     } else {
       return await this.destroy();
     }
