@@ -13,5 +13,8 @@ module.exports = {
     const OSJson = OSs ? OSs.toJSON() : undefined;
 
     ctx.body = response.success({ list: OSJson, totalSize: OSs.pagination.rowCount}, "Get OS list successfully!");
+  },
+
+  new: async (ctx) => {
   }
 };
