@@ -23,9 +23,15 @@ CREATE TABLE users(
 CREATE TABLE oss(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(32) NOT NULL,
-	detail varchar(256),
-	version varchar(32)
+	type varchar(32),
+	detail varchar(256)
 );
+
+CREATE TABLE oss_vm_option_templates(
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    os_id INT NOT NULL REFERENCES oss(id),
+    vm_option_template_id INT NOT NULL REFERENCES vm_option_templates(id)
+)
 
 CREATE TABLE vms(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
