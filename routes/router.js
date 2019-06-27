@@ -5,7 +5,7 @@ const local = {};
 local.userController = require('../controllers/UserController');
 local.vmController = require('../controllers/VmController');
 local.vmOptionTemplateController = require('../controllers/VmOptionTemplateController');
-local.osController = require('../controllers/OsController');
+local.osController = require('../controllers/OSController');
 
 router.all('/:controller/:action', async (ctx, next) => {
   let { controller, action } = ctx.params;

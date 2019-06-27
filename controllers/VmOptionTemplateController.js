@@ -48,4 +48,9 @@ module.exports = {
     const allOptions = await VmOptionTemplate.where({ is_primary: true }).fetchAll();
     ctx.body = response.success(allOptions.toJSON(), "Get all primary options");
   },
+
+  all: async (ctx) => {
+    const allOptions = await VmOptionTemplate.where({ }).fetchAll();
+    ctx.body = response.success(allOptions.toJSON(), "Get all options");
+  }
 };

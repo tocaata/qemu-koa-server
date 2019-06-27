@@ -1,5 +1,7 @@
 const OS = require('../models/os');
+const OSTemplate = require('../models/osTemplate');
 const response = require('../lib/response');
+const bookshelf = require('../lib/bookshelf');
 
 module.exports = {
   list: async (ctx) => {
@@ -15,6 +17,21 @@ module.exports = {
     ctx.body = response.success({ list: OSJson, totalSize: OSs.pagination.rowCount}, "Get OS list successfully!");
   },
 
-  new: async (ctx) => {
+  build: async (ctx) => {
+    const { name, type, detail, templates } = ctx.request.body;
+
+    const result = await bookshelf.transaction(async t => {
+      await new OS({ name, type, detail })
+        .save(null, { transacting: t })
+        .tap(async os => {
+          return await Promise.all(
+            templates.map(tempId => {
+              return new OSTemplate({ os_id: os.id, vm_option_template_id: tempId }).save({}, {transacting: t});
+            })
+          )
+        });
+    });
+
+    ctx.body = response.success(null, "Create OS template successfully!")
   }
 };
