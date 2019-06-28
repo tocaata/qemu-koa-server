@@ -1,11 +1,17 @@
 const bookshelf = require('../lib/bookshelf');
 require('./vmConfig');
+require('./os');
+require('./osTemplate');
 
 const VmOptionTemplate = bookshelf.model('VmOptionTemplate', {
   tableName: 'vm_option_templates',
 
   vmConfigs() {
     return this.hasMany('VmConfig');
+  },
+
+  oss() {
+    return this.belongsToMany('OS').through('OSTemplate');
   },
 
 

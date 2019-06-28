@@ -33,5 +33,11 @@ module.exports = {
     });
 
     ctx.body = response.success(null, "Create OS template successfully!")
+  },
+
+  detail: async (ctx) => {
+    const { id } = ctx.request.body;
+
+    const os = await OSTemplate.where({ id }).fetch();
   }
 };
