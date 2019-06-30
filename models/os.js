@@ -6,7 +6,7 @@ const OS = bookshelf.model('OS', {
   tableName: 'oss',
 
   vmOptionTemplates() {
-    return this.hasMany('VmOptionTemplate').through('OSTemplate');
+    return this.belongsToMany('VmOptionTemplate', 'oss_vm_option_templates', 'os_id', 'vm_option_template_id');
   },
 
 

@@ -38,6 +38,12 @@ module.exports = {
   detail: async (ctx) => {
     const { id } = ctx.request.body;
 
-    const os = await OSTemplate.where({ id }).fetch();
+    const os = await OS.where({ id }).fetch({ withRelated: ['vmOptionTemplates'] });
+
+    // const templates = await os.vmOptionTemplates().fetch();
+
+    if (os) {
+      ctx.body = response.success(os.toJSON(), "Get OS detail.");
+    }
   }
 };
