@@ -10,8 +10,16 @@ const OS = bookshelf.model('OS', {
   },
 
   update(attributes, templates) {
-    bookshelf.transaction(async t => {
-      await this.set(attributes).save({ transacting: t });
+    return bookshelf.transaction(async t => {
+      await this.set(attributes).save(null, { transacting: t });
+      const cur = await this.vmOptionTemplates().fetch();
+      let ids = cur.map(t => t.id);
+
+      let deleted = ids.filter(x => !templates.includes(x));
+      let added = templates.filter(x => !ids.includes(x));
+
+      await this.vmOptionTemplates().detach(deleted, { transacting: t });
+      await this.vmOptionTemplates().attach(added, { transacting: t });
     });
   },
 

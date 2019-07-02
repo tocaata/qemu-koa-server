@@ -34,7 +34,7 @@ module.exports = bookshelf.model('Vm', {
         let curCfg = configs.find((c) => c.get('vm_option_template_id') === templateId);
 
         if (curCfg) {
-          await curCfg.set({ 'value': config }).save({ transaction: t });
+          await curCfg.set({ 'value': config }).save(null, { transacting: t });
         } else {
           await new VmConfig({  vm_option_template_id: parseInt(templateId), value: JSON.stringify(config), editable: true })
             .save({ vm_id: this.id }, {transacting: t});

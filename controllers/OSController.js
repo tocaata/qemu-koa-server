@@ -32,25 +32,17 @@ module.exports = {
         });
     });
 
+
     ctx.body = response.success(null, "Create OS template successfully!")
   },
 
   update: async (ctx) => {
     const { id, name, type, detail, templates } = ctx.request.body;
 
-    const result = await bookshelf.transaction(async t => {
-      await new OS({ name, type, detail })
-        .save(null, { transacting: t })
-        .tap(async os => {
-          return await Promise.all(
-            templates.map(tempId => {
-              return new OSTemplate({ os_id: os.id, vm_option_template_id: tempId }).save({}, {transacting: t});
-            })
-          )
-        });
-    });
+    const os = await OS.where({ id }).fetch();
+    await os.update({ name, type, detail }, templates);
 
-    ctx.body = response.success(null, "Create OS template successfully!")
+    ctx.body = response.success(null, "Update OS template successfully!")
   },
 
   detail: async (ctx) => {
