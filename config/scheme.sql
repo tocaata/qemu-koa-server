@@ -25,6 +25,7 @@ CREATE TABLE oss(
 	name varchar(32) NOT NULL,
 	type varchar(32),
 	detail varchar(256),
+	enabled TINYINT(1),
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp NULL DEFAULT NULL
 );
@@ -76,10 +77,12 @@ CREATE TABLE disks(
 	used_size int
 );
 
+
 CREATE TABLE vm_option_templates(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name varchar(64),
     arg varchar(16),
+    type varchar(64),
     is_primary TINYINT(1),
     config text
 );

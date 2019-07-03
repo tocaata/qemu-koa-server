@@ -17,11 +17,18 @@ module.exports = {
     ctx.body = response.success({ list: OSJson, totalSize: OSs.pagination.rowCount}, "Get OS list successfully!");
   },
 
+  enabled: async (ctx) => {
+    const OSs = await OS.where({ enabled: 1 }).fetchAll();
+    const OSJson = OSs && OSs.toJSON();
+
+    ctx.body = response.success(OSJson, "Get enabled OS template successfully!");
+  },
+
   build: async (ctx) => {
-    const { name, type, detail, templates } = ctx.request.body;
+    const { name, type, detail, enabled, templates } = ctx.request.body;
 
     const result = await bookshelf.transaction(async t => {
-      await new OS({ name, type, detail })
+      await new OS({ name, type, enabled, detail })
         .save(null, { transacting: t })
         .tap(async os => {
           return await Promise.all(
@@ -37,10 +44,10 @@ module.exports = {
   },
 
   update: async (ctx) => {
-    const { id, name, type, detail, templates } = ctx.request.body;
+    const { id, name, type, detail, enabled, templates } = ctx.request.body;
 
     const os = await OS.where({ id }).fetch();
-    await os.update({ name, type, detail }, templates);
+    await os.update({ name, type, detail, enabled}, templates);
 
     ctx.body = response.success(null, "Update OS template successfully!")
   },
