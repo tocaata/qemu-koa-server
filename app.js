@@ -6,7 +6,6 @@ const Koa = require('koa')
   , onerror = require('koa-onerror');
 
 const app = new Koa;
-const index = require('./routes/index');
 const router = require('./routes/router');
 const sessionController = require('./controllers/SessionController');
 const HttpError = require('http-errors');
@@ -54,8 +53,6 @@ app.use(koaStatic(__dirname + '/public'));
 // Get user session.
 app.use(sessionController);
 
-
-app.use(index.routes()).use(index.allowedMethods());
 app.use(router.routes()).use(router.allowedMethods());
 
 // error-handling
