@@ -53,7 +53,13 @@ module.exports = {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
     const result = await runingMachines.exec('getCmd', machine);
-    ctx.body = response.success(result, "Get Machine Command Arguments Successfully.")
+    ctx.body = response.success(result, "Get Machine Command Arguments Successfully.");
+  },
+
+  detail: async (ctx) => {
+    const { id } = ctx.query;
+    const machine = await Vm.where({ id }).fetch({ withRelated: ['configs', 'configs.vmOptionTemplate'] });
+    ctx.body = response.success(machine, "Get machine detail.");
   },
 
   run: async (ctx) => {
@@ -61,6 +67,6 @@ module.exports = {
     const machine = await Vm.where({ id }).fetch();
     const result = await runingMachines.start(machine);
 
-    ctx.body = response.success(result, "Machine Start Up.")
+    ctx.body = response.success(result, "Machine Start Up.");
   }
 };

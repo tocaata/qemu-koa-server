@@ -22,6 +22,10 @@ module.exports = bookshelf.model('Vm', {
     })
   },
 
+  async getConfigs() {
+    const configs = await this.configs().fetch({withRelated: ['vmOptionTemplate']});
+  },
+
   update(property) {
     return this.set(property).save();
   },
