@@ -68,5 +68,11 @@ module.exports = {
     const result = await runingMachines.start(machine);
 
     ctx.body = response.success(result, "Machine Start Up.");
+  },
+
+  exec: async (ctx) => {
+    const { id, cmd } = ctx.request.body;
+    const machine = await Vm.where({ id }).fetch();
+    const result = await runingMachines.exec(cmd, machine);
   }
 };
