@@ -14,7 +14,14 @@ module.exports = {
       }
     }).orderBy(`${ ascending ? '' : '-' }${orderBy}`).fetchPage({ pageSize, page: pageIndex });
     const vmsJson = vms ? vms.toJSON() : undefined;
-
+    vmsJson.forEach(x => {
+      const running = runingMachines.runingMachines.find(y => y.id === x.id);
+      if (running != null) {
+        x.status = running.vmStatus;
+      } else {
+        x.status = 'stopped';
+      }
+    });
     ctx.body = response.success({ list: vmsJson, totalSize: vms.pagination.rowCount}, "Get vm list successfully!");
   },
 
@@ -74,5 +81,6 @@ module.exports = {
     const { id, cmd } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
     const result = await runingMachines.exec(cmd, machine);
+    ctx.body = response.success(result, "Machine QMP command is run.");
   }
 };
