@@ -83,7 +83,6 @@ module.exports = {
     const machine = await Vm.where({ id }).fetch();
     const result = await runingMachines.exec(cmd, machine);
 
-    bus.emit('toAll', 'updateMachineList', {});
     ctx.body = response.success(result, "Machine QMP command is run.");
   }
 };
