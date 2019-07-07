@@ -4,6 +4,7 @@ const VmConfig = require('../models/vmConfig');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
 const runingMachines = require('../lib/runingMachines');
+const bus = require('../lib/bus');
 
 module.exports = {
   list: async (ctx) => {
@@ -81,6 +82,8 @@ module.exports = {
     const { id, cmd } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
     const result = await runingMachines.exec(cmd, machine);
+
+    bus.emit('toAll', 'updateMachineList', {});
     ctx.body = response.success(result, "Machine QMP command is run.");
   }
 };
