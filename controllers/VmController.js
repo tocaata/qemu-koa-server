@@ -60,14 +60,23 @@ module.exports = {
   getCmd: async (ctx) => {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
-    const result = await runingMachines.exec('getCmd', machine);
+    const result = await runingMachines.exec(machine, 'getCmd');
     ctx.body = response.success(result, "Get Machine Command Arguments Successfully.");
   },
 
   detail: async (ctx) => {
     const { id } = ctx.query;
     const machine = await Vm.where({ id }).fetch({ withRelated: ['configs', 'configs.vmOptionTemplate'] });
-    ctx.body = response.success(machine, "Get machine detail.");
+    let json = machine.toJSON();
+    json.vmOptionTemplates = json.configs.map(x => {
+      let template = x.vmOptionTemplate;
+      delete x['vmOptionTemplate'];
+      template.values = x;
+      return template;
+    });
+    delete json.configs;
+
+    ctx.body = response.success(json, "Get machine detail.");
   },
 
   run: async (ctx) => {
@@ -79,9 +88,9 @@ module.exports = {
   },
 
   exec: async (ctx) => {
-    const { id, cmd } = ctx.request.body;
+    const { id, cmd, args } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
-    const result = await runingMachines.exec(cmd, machine);
+    const result = await runingMachines.exec(machine, cmd, args);
 
     ctx.body = response.success(result, "Machine QMP command is run.");
   }
