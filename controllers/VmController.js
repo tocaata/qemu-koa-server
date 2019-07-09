@@ -79,6 +79,14 @@ module.exports = {
     ctx.body = response.success(json, "Get machine detail.");
   },
 
+  deleteConfig: async (ctx) => {
+    const { configId, machineId } = ctx.request.body;
+    const machine = await Vm.where({ id: machineId }).fetch();
+    const result = machine.deleteConfig(configId);
+
+    ctx.body = response.success(result, 'Delete machine argument config.');
+  },
+
   run: async (ctx) => {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();

@@ -49,6 +49,10 @@ module.exports = bookshelf.model('Vm', {
     });
   },
 
+  async deleteConfig(configId) {
+    return this.configs().detach(configId);
+  },
+
   async delete() {
     return await bookshelf.transaction(async (t) => {
       const configs = await this.configs().fetch();
