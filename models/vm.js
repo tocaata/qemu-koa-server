@@ -50,7 +50,9 @@ module.exports = bookshelf.model('Vm', {
   },
 
   async deleteConfig(configId) {
-    return this.configs().detach(configId);
+    const config = await bookshelf.model('VmConfig').where({ id: configId }).fetch();
+    let configs = await this.configs().fetch();
+    return await configs.remove(config);
   },
 
   async delete() {

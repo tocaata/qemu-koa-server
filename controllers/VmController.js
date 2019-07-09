@@ -82,7 +82,7 @@ module.exports = {
   deleteConfig: async (ctx) => {
     const { configId, machineId } = ctx.request.body;
     const machine = await Vm.where({ id: machineId }).fetch();
-    const result = machine.deleteConfig(configId);
+    const result = await machine.deleteConfig(configId);
 
     ctx.body = response.success(result, 'Delete machine argument config.');
   },
