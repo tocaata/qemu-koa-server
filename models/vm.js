@@ -30,29 +30,36 @@ module.exports = bookshelf.model('Vm', {
     return this.set(property).save();
   },
 
-  async updateConfig(cfg) {
-    const configs = await this.configs().fetch({ withRelated: ['vmOptionTemplate'] });
+  async addConfig(templateId) {
+    return this.configs().add({ vm_id: parseInt(this.id), vm_option_template_id: templateId, editable: 1, value: '{}' })
+      .invokeThen('save');
+  },
 
-    return await bookshelf.transaction(async (t) => {
-      for (let [templateId, config] of Object.entries(cfg)) {
-        let curCfg = configs.find((c) => c.get('vm_option_template_id') === templateId);
+  async updateConfig(configId, configParams) {
+    // const configs = await this.configs().fetch();
+    const config = await bookshelf.model('VmConfig').where({ id: configId }).fetch();
+    return await config.set({ value: JSON.stringify(configParams) }).save();
 
-        if (curCfg) {
-          await curCfg.set({ 'value': config }).save(null, { transacting: t });
-        } else {
-          await new VmConfig({  vm_option_template_id: parseInt(templateId), value: JSON.stringify(config), editable: true })
-            .save({ vm_id: this.id }, {transacting: t});
-        }
-      }
+    // return await bookshelf.transaction(async (t) => {
+    //   for (let [templateId, config] of Object.entries(cfg)) {
+    //     let curCfg = configs.find((c) => c.get('vm_option_template_id') === templateId);
+    //
+    //     if (curCfg) {
+    //       await curCfg.set({ 'value': config }).save(null, { transacting: t });
+    //     } else {
+    //       await new VmConfig({  vm_option_template_id: parseInt(templateId), value: JSON.stringify(config), editable: true })
+    //         .save({ vm_id: this.id }, {transacting: t});
+    //     }
+    //   }
 
-      return this;
-    });
+      // return this;
+    // });
   },
 
   async deleteConfig(configId) {
-    const config = await bookshelf.model('VmConfig').where({ id: configId }).fetch();
+    // const config = await bookshelf.model('VmConfig').where({ id: configId }).fetch();
     let configs = await this.configs().fetch();
-    return await configs.remove(config);
+    return await configs.get(configId).destroy();
   },
 
   async delete() {

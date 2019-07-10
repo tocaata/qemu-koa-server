@@ -87,6 +87,22 @@ module.exports = {
     ctx.body = response.success(result, 'Delete machine argument config.');
   },
 
+  addConfig: async (ctx) => {
+    const { templateId, machineId } = ctx.request.body;
+    const machine = await Vm.where({ id: machineId }).fetch();
+    const result = await machine.addConfig(templateId);
+
+    ctx.body = response.success(result, 'Add machine argument config.');
+  },
+
+  editConfig: async (ctx) => {
+    const { configId, machineId, configParams } = ctx.request.body;
+    const machine = await Vm.where({ id: machineId }).fetch();
+    const result = await machine.updateConfig(configId, configParams);
+
+    ctx.body = response.success(result, 'Update machine argument config.');
+  },
+
   run: async (ctx) => {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
