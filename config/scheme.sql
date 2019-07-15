@@ -17,7 +17,8 @@ CREATE TABLE users(
 	password_hash varchar(64),
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp NULL DEFAULT NULL,
-	detail varchar(256)
+	detail varchar(256),
+	KEY idx_users_created_at(created_at) USING BTREE
 );
 
 CREATE TABLE oss(
@@ -34,6 +35,8 @@ CREATE TABLE oss_vm_option_templates(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     os_id INT NOT NULL REFERENCES oss(id),
     vm_option_template_id INT NOT NULL REFERENCES vm_option_templates(id)
+    KEY idx_oss_vm_option_templates_os_id(os_id) USING BTREE,
+    KEY idx_oss_vm_option_templates_vm_option_template_id(vm_option_template_id) USING BTREE
 );
 
 CREATE TABLE vms(
@@ -47,7 +50,8 @@ CREATE TABLE vms(
 	is_template TINYINT(1),
 	os_id integer REFERENCES oss(id),
 	status TINYINT(3), -- 0: stopped, 1: running, 2: pending, 3: down
-	owner_id int REFERENCES users(id)
+	owner_id int REFERENCES users(id),
+	KEY idx_oss_created_at(created_at) USING BTREE
 );
 
 CREATE TABLE vm_configs(
@@ -56,7 +60,8 @@ CREATE TABLE vm_configs(
 	name varchar(32),
 	value varchar(256),
 	vm_option_template_id int REFERENCES vm_option_templates(id),
-	editable TINYINT(1)
+	editable TINYINT(1),
+	KEY idx_vm_configs_vm_id(vm_id) USING BTREE
 );
 
 CREATE TABLE discs(
