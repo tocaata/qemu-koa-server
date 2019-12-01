@@ -39,7 +39,7 @@ module.exports = {
     let theArg = await VmOptionTemplate.where({ id }).fetch();
 
     if (theArg) {
-      theArg = await theArg.set({ name: title, type, arg, is_primary: isPrimary, config: JSON.stringify(config) }).save();
+      theArg = await theArg.set({ name: title, type, arg: JSON.stringify(arg), is_primary: isPrimary, config: JSON.stringify(config) }).save();
       ctx.body = response.success(theArg.toJSON(), "Update argument template successfully!")
     } else {
       ctx.throw("No this argument template.");

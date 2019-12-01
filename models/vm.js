@@ -9,17 +9,24 @@ module.exports = bookshelf.model('Vm', {
 
   async getCmd() {
     const configs = await this.configs().fetch({withRelated: ['vmOptionTemplate']});
+    const argTemplates = [];
 
-    return configs.map(c => {
-      const conf = c.related('vmOptionTemplate'), kvs = JSON.parse(c.get('value'));
-      let tpl = JSON.parse(conf.get('config')).template;
+    configs.forEach(c => {
+      const optionTemplate = c.related('vmOptionTemplate'), kvs = JSON.parse(c.get('value'));
+      const config = JSON.parse(optionTemplate.get('config')), args = config.arg || [];
+
+      let templates = config.template || [];
 
       for (let [k, v] of Object.entries(kvs)) {
-        tpl = tpl.replace(k, v);
+        templates = templates.map(item => item && item.replace(k, v));
       }
 
-      return [conf.get('arg'), tpl];
+      for (let i = 0; i < args.length; i++) {
+        argTemplates.push([args[i], templates[i]])
+      }
     });
+
+    return argTemplates;
   },
 
   update(property) {
