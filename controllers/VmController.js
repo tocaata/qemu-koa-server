@@ -3,7 +3,7 @@ const Vm = require('../models/vm');
 const VmConfig = require('../models/vmConfig');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
-const runingMachines = require('../lib/runingMachines');
+const runningMachines = require('../lib/runningMachines');
 const bus = require('../lib/bus');
 
 module.exports = {
@@ -16,9 +16,9 @@ module.exports = {
     }).orderBy(`${ ascending ? '' : '-' }${orderBy}`).fetchPage({ pageSize, page: pageIndex });
     const vmsJson = vms ? vms.toJSON() : undefined;
     vmsJson.forEach(x => {
-      const running = runingMachines.runingMachines.find(y => y.id === x.id);
-      if (running != null) {
-        x.status = running.vmStatus;
+      const machine = runningMachines.runningMachines.find(y => y.id === x.id);
+      if (machine != null) {
+        x.status = machine.vmStatus;
       } else {
         x.status = 'stopped';
       }
@@ -47,7 +47,7 @@ module.exports = {
   delete: async (ctx) => {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
-    const result = await runingMachines.delete(machine);
+    const result = await runningMachines.delete(machine);
 
     ctx.body = response.success(undefined, "Delete machine successfully!");
   },
@@ -60,7 +60,7 @@ module.exports = {
   getCmd: async (ctx) => {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
-    const result = await runingMachines.exec(machine, 'getCmd');
+    const result = await runningMachines.exec(machine, 'getCmd');
     ctx.body = response.success(result, "Get Machine Command Arguments Successfully.");
   },
 
@@ -106,7 +106,7 @@ module.exports = {
   run: async (ctx) => {
     const { id } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
-    const result = await runingMachines.start(machine);
+    const result = await runningMachines.start(machine);
 
     ctx.body = response.success(result, "Machine Start Up.");
   },
@@ -114,7 +114,7 @@ module.exports = {
   exec: async (ctx) => {
     const { id, cmd, args } = ctx.request.body;
     const machine = await Vm.where({ id }).fetch();
-    const result = await runingMachines.exec(machine, cmd, args);
+    const result = await runningMachines.exec(machine, cmd, args);
 
     ctx.body = response.success(result, "Machine QMP command is run.");
   }
