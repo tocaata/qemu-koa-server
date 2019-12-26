@@ -1,10 +1,15 @@
 const bookshelf = require('../lib/bookshelf');
 require('./vmConfig');
+require('./os');
 
 module.exports = bookshelf.model('Vm', {
   tableName: 'vms',
   configs() {
     return this.hasMany('VmConfig');
+  },
+
+  os() {
+    return this.belongsTo('OS', 'os_id');
   },
 
   async getCmd() {

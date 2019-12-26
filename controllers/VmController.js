@@ -4,7 +4,7 @@ const VmConfig = require('../models/vmConfig');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
 const runningMachines = require('../lib/runningMachines');
-const bus = require('../lib/bus');
+// const bus = require('../lib/bus');
 
 module.exports = {
   list: async (ctx) => {
@@ -13,7 +13,7 @@ module.exports = {
       if (searchStr && searchStr.length > 0) {
         qb.whereRaw(`CONCAT(\`name\`) like '%${ searchStr.replace(/'/g, `\\'`) }%'`);
       }
-    }).orderBy(`${ ascending ? '' : '-' }${orderBy}`).fetchPage({ pageSize, page: pageIndex });
+    }).orderBy(`${ ascending ? '' : '-' }${orderBy}`).fetchPage({ pageSize, page: pageIndex, withRelated: ['os'] });
     const vmsJson = vms ? vms.toJSON() : undefined;
     vmsJson.forEach(x => {
       const machine = runningMachines.runningMachines.find(y => y.id === x.id);
@@ -27,10 +27,10 @@ module.exports = {
   },
 
   create: async (ctx) => {
-    const { name, arguments: args } = ctx.request.body;
+    const { name, arguments: args, osId } = ctx.request.body;
 
     const vm = await bookshelf.transaction(async (t) => {
-      return await new Vm({ name, status: 0, auto_boot: false })
+      return await new Vm({ name, os_id: osId, status: 0, auto_boot: false })
         .save(null, {transacting: t})
         .tap(async (m) => {
           return await Promise.all(Object.entries(args).map(( async ([id, config]) => {

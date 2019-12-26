@@ -86,7 +86,7 @@ CREATE TABLE disks(
 CREATE TABLE vm_option_templates(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name varchar(64),
-    arg varchar(16),
+    arg varchar(64),
     type varchar(64),
     is_primary TINYINT(1),
     config text

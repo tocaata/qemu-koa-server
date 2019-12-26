@@ -8,7 +8,9 @@ const Koa = require('koa')
 const app = new Koa;
 const router = require('./routes/router');
 const sessionController = require('./controllers/SessionController');
-const HttpError = require('http-errors');
+// const HttpError = require('http-errors');
+
+const autoboot = require('./lib/autoboot');
 
 // error handler
 onerror(app);
@@ -39,7 +41,6 @@ app.use(async (ctx, next) => {
       ctx.body = { status: 'FAIL', code: 400, message: e.message };
       ctx.status = 400;
       ctx.message = e.message;
-      return ;
       // ctx.throw(e.code, e.message);
     } else {
       console.error(e);
@@ -60,5 +61,7 @@ app.use(router.routes()).use(router.allowedMethods());
 // app.on('error', (err, ctx) => {
 //   console.error('server error', err, ctx);
 // });
+
+autoboot();
 
 module.exports = app;
