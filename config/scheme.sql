@@ -34,7 +34,7 @@ CREATE TABLE oss(
 CREATE TABLE oss_vm_option_templates(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     os_id INT NOT NULL REFERENCES oss(id),
-    vm_option_template_id INT NOT NULL REFERENCES vm_option_templates(id)
+    vm_option_template_id INT NOT NULL REFERENCES vm_option_templates(id),
     KEY idx_oss_vm_option_templates_os_id(os_id) USING BTREE,
     KEY idx_oss_vm_option_templates_vm_option_template_id(vm_option_template_id) USING BTREE
 );
