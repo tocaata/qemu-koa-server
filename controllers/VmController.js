@@ -4,7 +4,7 @@ const VmConfig = require('../models/vmConfig');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
 const runningMachines = require('../lib/runningMachines');
-// const bus = require('../lib/bus');
+const bus = require('../lib/bus');
 
 module.exports = {
   list: async (ctx) => {
@@ -101,6 +101,16 @@ module.exports = {
     const result = await machine.updateConfig(configId, configParams);
 
     ctx.body = response.success(result, 'Update machine argument config.');
+  },
+
+  update: async (ctx) => {
+    const { id, autoBoot, name } = ctx.request.body;
+    const machine = await Vm.where({ id }).fetch();
+    const result = await machine.update({ auto_boot: autoBoot, name});
+
+    bus.emit('toAll', 'updateMachineList', { message: 'Update virtual machine successfully.' });
+
+    ctx.body = response.success(result, 'Update virtual machine successfully.')
   },
 
   run: async (ctx) => {
