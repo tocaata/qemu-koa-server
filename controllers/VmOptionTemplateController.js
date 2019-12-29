@@ -6,7 +6,7 @@ module.exports = {
   build: async (ctx) => {
     const object = ctx.request.body;
 
-    const option = await new VmOptionTemplate({ name: object.title, arg: object.arg, type: object.type,
+    const option = await new VmOptionTemplate({ name: object.title, arg: JSON.stringify(object.arg), type: object.type,
       is_primary: object.isPrimary, config: JSON.stringify(object) }).save();
 
     if (option.id > 0) {
