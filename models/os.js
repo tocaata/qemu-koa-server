@@ -29,6 +29,10 @@ const OS = bookshelf.model('OS', {
   },
 
   async delete() {
+    return bookshelf.transaction(async t => {
+      await this.vmOptionTemplates().detach(null, { transacting: t });
+      await this.destroy({ transacting: t });
+    });
   }
 });
 

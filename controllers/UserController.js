@@ -20,8 +20,6 @@ module.exports = {
     const { userId } = ctx.request.body;
     const userDeletable = await User.where({ id: userId }).destroy();
 
-    console.log(userDeletable);
-
     ctx.body = response.success(undefined, "Delete user successfully.");
   },
 

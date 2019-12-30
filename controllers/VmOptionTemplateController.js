@@ -1,4 +1,3 @@
-const bookshelf = require('../lib/bookshelf');
 const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
 
@@ -17,9 +16,13 @@ module.exports = {
   },
 
   list: async (ctx) => {
-    const { pageIndex, pageSize } = ctx.request.body;
+    const { pageIndex, pageSize, searchStr } = ctx.request.body;
 
-    const options = await VmOptionTemplate.query({}).fetchPage({ pageSize, page: pageIndex });
+    const options = await VmOptionTemplate.query(qb => {
+      if (searchStr && searchStr.length > 0) {
+        qb.whereRaw(`CONCAT(\`name\`) like '%${ searchStr.replace(/'/g, `\\'`) }%'`);
+      }
+    }).fetchPage({ pageSize, page: pageIndex });
     const optionsJson = options ? options.toJSON() : undefined;
 
     ctx.body = response.success({ list: optionsJson, totalSize: options.pagination.rowCount }, "Get option list successfully!");

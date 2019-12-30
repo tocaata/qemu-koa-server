@@ -40,7 +40,7 @@ module.exports = {
     });
 
 
-    ctx.body = response.success(null, "Create OS template successfully!")
+    ctx.body = response.success(result && result.toJSON(), "Create OS template successfully!")
   },
 
   update: async (ctx) => {
@@ -57,10 +57,16 @@ module.exports = {
 
     const os = await OS.where({ id }).fetch({ withRelated: ['vmOptionTemplates'] });
 
-    // const templates = await os.vmOptionTemplates().fetch();
-
     if (os) {
       ctx.body = response.success(os.toJSON(), "Get OS detail.");
     }
-  }
+  },
+
+  delete: async (ctx) => {
+    const { id } = ctx.request.body;
+    const os = await OS.where({ id }).fetch();
+    const result = await os.delete();
+
+    ctx.body = response.success(undefined, "Delete OS Template successfully!");
+  },
 };
