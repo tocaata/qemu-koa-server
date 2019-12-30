@@ -49,13 +49,11 @@ module.exports = {
     }
   },
 
-  primary: async (ctx) => {
-    const allOptions = await VmOptionTemplate.where({ is_primary: true }).fetchAll();
-    ctx.body = response.success(allOptions.toJSON(), "Get all primary options");
-  },
-
   all: async (ctx) => {
-    const allOptions = await VmOptionTemplate.where({ }).fetchAll();
+    let { enabled } = ctx.request.query;
+    enabled = enabled === 1 || enabled === true || enabled === 'true';
+
+    const allOptions = await VmOptionTemplate.where({ is_primary: enabled  }).fetchAll();
     ctx.body = response.success(allOptions.toJSON(), "Get all options");
   }
 };

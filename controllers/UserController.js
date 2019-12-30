@@ -3,7 +3,6 @@ const Session = require('../models/session');
 
 const crypto = require('crypto');
 const uuidv4 = require('uuid/v4');
-const moment = require('moment');
 const response = require('../lib/response');
 
 module.exports = {

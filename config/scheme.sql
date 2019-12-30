@@ -91,3 +91,14 @@ CREATE TABLE vm_option_templates(
     is_primary TINYINT(1),
     config text
 );
+
+CREATE TABLE settings(
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name varchar(64),
+    value varchar(256),
+    type varchar(64),
+    enabled TINYINT(1),
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_oss_settings_type(type) USING BTREE,
+    KEY idx_oss_settings_name(name) USING BTREE
+);
