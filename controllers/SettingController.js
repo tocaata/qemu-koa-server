@@ -18,13 +18,30 @@ module.exports = {
         );
     },
 
+    build: async (ctx) => {
+        const {name, type, value} = ctx.request.body;
+
+        const newSetting = await new Setting({name, type, value}).save();
+
+        ctx.body = response.success(newSetting.toJSON(), "Add new setting successfully!");
+    },
+
+    update: async (ctx) => {
+        const {id, name, type, value} = ctx.request.body;
+
+        const setting = await Setting.where({ id }).fetch();
+        await setting.update({id, name, type, value});
+        const updatedSetting = await setting.refresh();
+
+        ctx.body = response.success(updatedSetting, "Update Setting successfully!");
+    },
+
     delete: async (ctx) => {
         const {id} = ctx.request.body;
 
         const setting = await Setting.where({ id }).fetch();
-
         await setting.destroy();
 
-        ctx.body = response({}, "Delete Settings successfully!");
+        ctx.body = response.success({}, "Delete Setting successfully!");
     }
 };
