@@ -6,6 +6,8 @@ const response = require('../lib/response');
 const runningMachines = require('../lib/runningMachines');
 const bus = require('../lib/bus');
 
+const _ = require('lodash');
+
 module.exports = {
   list: async (ctx) => {
     const { searchStr, pageIndex, pageSize, orderBy, ascending } = ctx.request.body;
@@ -33,15 +35,34 @@ module.exports = {
       return await new Vm({ name, os_id: osId, status: 0, auto_boot: false })
         .save(null, {transacting: t})
         .tap(async (m) => {
-          return await Promise.all(Object.entries(args).map(( async ([id, config]) => {
+          return await Promise.all(Object.entries(args).map( async ([id, config]) => {
             return await new VmConfig({ vm_option_template_id: parseInt(id), value: JSON.stringify(config), editable: true})
               .save({ vm_id: m.id }, {transacting: t});
-          })));
+          }));
         });
     });
-    // console.log(vm.related('configs'));
 
     ctx.body = response.success(undefined, "Create machine successfully!");
+  },
+
+  clone: async (ctx) => {
+    const {id} = ctx.request.body;
+    const vm = await Vm.where({ id }).fetch({ withRelated: ['configs'] });
+    const vmConfig = vm.toJSON();
+    vmConfig.name = vmConfig.name + '_clone';
+
+    const vmClone = await bookshelf.transaction(async t => {
+      return new Vm(_.pick(vmConfig, ['name', 'os_id', 'status']))
+        .save(null, {transacting: t})
+        .tap(async m => {
+          return Promise.all(vmConfig.configs.map(async config => {
+            return new VmConfig(_.pick(config, ['vm_option_template_id', 'value', 'editable']))
+              .save({ vm_id: m.id }, {transacting: t});
+          }));
+        });
+    });
+
+    ctx.body = response.success(undefined, "Clone virtual machine successfully!");
   },
 
   delete: async (ctx) => {
