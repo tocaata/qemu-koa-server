@@ -5,6 +5,7 @@ const VmOptionTemplate = require('../models/vmOptionTemplate');
 const response = require('../lib/response');
 const runningMachines = require('../lib/runningMachines');
 const bus = require('../lib/bus');
+const {broadcast} = require('../lib/socket');
 
 const _ = require('lodash');
 
@@ -129,7 +130,9 @@ module.exports = {
     const machine = await Vm.where({ id }).fetch();
     const result = await machine.update({ auto_boot: autoBoot, name});
 
-    bus.emit('toAll', 'updateMachineList', { message: 'Update virtual machine successfully.' });
+
+
+    broadcast('updateMachineList', { message: 'Update virtual machine successfully.' });
 
     ctx.body = response.success(result, 'Update virtual machine successfully.')
   },
