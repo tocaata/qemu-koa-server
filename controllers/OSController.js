@@ -25,10 +25,10 @@ module.exports = {
   },
 
   build: async (ctx) => {
-    const { name, type, detail, enabled, templates } = ctx.request.body;
+    const { name, type, icon, detail, enabled, templates } = ctx.request.body;
 
     const result = await bookshelf.transaction(async t => {
-      await new OS({ name, type, enabled, detail })
+      await new OS({ name, type, icon, enabled, detail })
         .save(null, { transacting: t })
         .tap(async os => {
           return await Promise.all(
@@ -44,10 +44,10 @@ module.exports = {
   },
 
   update: async (ctx) => {
-    const { id, name, type, detail, enabled, templates } = ctx.request.body;
+    const { id, name, type, icon, detail, enabled, templates } = ctx.request.body;
 
     const os = await OS.where({ id }).fetch();
-    await os.update({ name, type, detail, enabled}, templates);
+    await os.update({ name, type, icon, detail, enabled}, templates);
 
     ctx.body = response.success(null, "Update OS template successfully!")
   },

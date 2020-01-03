@@ -16,13 +16,13 @@ module.exports = {
   },
 
   list: async (ctx) => {
-    const { pageIndex, pageSize, searchStr } = ctx.request.body;
+    const { pageIndex, pageSize, searchStr, orderBy, ascending } = ctx.request.body;
 
     const options = await VmOptionTemplate.query(qb => {
       if (searchStr && searchStr.length > 0) {
-        qb.whereRaw(`CONCAT(\`name\`) like '%${ searchStr.replace(/'/g, `\\'`) }%'`);
+        qb.whereRaw(`CONCAT(\`name\`, \`arg\`) like '%${ searchStr.replace(/'/g, `\\'`) }%'`);
       }
-    }).fetchPage({ pageSize, page: pageIndex });
+    }).orderBy(`${ ascending ? '' : '-' }${orderBy}`).fetchPage({ pageSize, page: pageIndex });
     const optionsJson = options ? options.toJSON() : undefined;
 
     ctx.body = response.success({ list: optionsJson, totalSize: options.pagination.rowCount }, "Get option list successfully!");
@@ -50,10 +50,14 @@ module.exports = {
   },
 
   all: async (ctx) => {
-    let { enabled } = ctx.request.query;
-    enabled = enabled === 1 || enabled === true || enabled === 'true';
+    const { enabled } = ctx.request.query;
+    const queryObj = {};
 
-    const allOptions = await VmOptionTemplate.where({ is_primary: enabled  }).fetchAll();
+    if (enabled != null) {
+      queryObj['is_primary'] = enabled === 1 || enabled === true || enabled === 'true';
+    }
+
+    const allOptions = await VmOptionTemplate.where(queryObj).fetchAll();
     ctx.body = response.success(allOptions.toJSON(), "Get all options");
   }
 };

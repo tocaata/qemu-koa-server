@@ -25,11 +25,14 @@ CREATE TABLE oss(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name varchar(32) NOT NULL,
 	type varchar(32),
+	icon varchar(64),
 	detail varchar(256),
 	enabled TINYINT(1),
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp NULL DEFAULT NULL
 );
+
+ALTER TABLE oss ADD COLUMN icon varchar(64);
 
 CREATE TABLE oss_vm_option_templates(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
