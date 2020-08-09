@@ -23,7 +23,7 @@ module.exports = bookshelf.model('Vm', {
       let templates = config.template || [];
 
       for (let [k, v] of Object.entries(kvs)) {
-        templates = templates.map(item => item && item.replace(k, v));
+        templates = templates.map(item => item && item.replace(new RegExp(k, 'g'), v));
       }
 
       for (let i = 0; i < args.length; i++) {
